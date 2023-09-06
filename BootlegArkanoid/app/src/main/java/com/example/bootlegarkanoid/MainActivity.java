@@ -3,7 +3,7 @@ package com.example.bootlegarkanoid;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.widget.TextView;
+import android.view.MotionEvent;
 
 import com.example.bootlegarkanoid.databinding.ActivityMainBinding;
 
@@ -23,14 +23,17 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Example of a call to a native method
-        TextView tv = binding.sampleText;
-        tv.setText(stringFromJNI());
+        boolean res = Launch();
+        // TODO: handle failure to launch/intialize
     }
-
-    /**
-     * A native method that is implemented by the 'bootlegarkanoid' native library,
-     * which is packaged with this application.
-     */
-    public native String stringFromJNI();
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int action = event.getAction();
+        float x = event.getX();
+        float y = event.getY();
+        
+        return SignalInputEvent(action, x, y);
+    }
+    public native boolean Launch();
+    public native boolean SignalInputEvent(int action, float x, float y);
 }
