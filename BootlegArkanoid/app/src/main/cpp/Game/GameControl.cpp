@@ -1,14 +1,34 @@
 #include "GameControl.h"
 #include "Game.h"
+#include "InputEvent.h"
 
 namespace
 {
     Game g_gameInstance;
 }
 
-bool GameControl::Start()
+bool GameControl::Initialize(int sizeX, int sizeY)
 {
-    return g_gameInstance.Initialize();
+    return g_gameInstance.Initialize(Vec2D(sizeX, sizeY));
+}
+
+void GameControl::Run()
+{
+    if (!g_gameInstance.IsInitialized())
+    {
+        // TODO: log uninitialized game state
+        return;
+    }
+
+    g_gameInstance.Update();
+}
+
+void GameControl::Exit()
+{
+    if (g_gameInstance.IsInitialized())
+    {
+        g_gameInstance.Quit();
+    }
 }
 
 bool GameControl::NewInputEvent(int action, float x, float y)
