@@ -12,17 +12,6 @@ bool GameControl::Initialize(int sizeX, int sizeY, float fps)
     return g_gameInstance.Initialize(Vec2D(sizeX, sizeY), static_cast<uint32_t>(fps));
 }
 
-void GameControl::Run()
-{
-    if (!g_gameInstance.IsInitialized())
-    {
-        // TODO: log uninitialized game state
-        return;
-    }
-
-    g_gameInstance.Update();
-}
-
 void GameControl::Exit()
 {
     if (g_gameInstance.IsInitialized())
@@ -51,6 +40,6 @@ bool GameControl::NewInputEvent(int action, float x, float y)
     }
 
     InputEvent input = InputEvent(inputAction, x, y);
-
+    g_gameInstance.RecordInputEvent(input);
     return true;
 }
