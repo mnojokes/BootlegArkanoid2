@@ -3,9 +3,9 @@
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_example_bootlegarkanoid_MainActivity_Launch(JNIEnv *env, jobject thiz, jint sizeVertical, jint sizeHorizontal)
+Java_com_example_bootlegarkanoid_MainActivity_Launch(JNIEnv *env, jobject thiz, jint sizeX, jint sizeY, jfloat refreshRate)
 {
-    if (!GameControl::Initialize(sizeHorizontal, sizeVertical))
+    if (!GameControl::Initialize(sizeX, sizeY, refreshRate))
     {
         // TODO: log failure to initialize
         return false;

@@ -24,12 +24,17 @@ project("bootlegarkanoid")
 # System.loadLibrary() and pass the name of the library defined here;
 # for GameActivity/NativeActivity derived applications, the same library name must be
 # used in the AndroidManifest.xml file.
-include_directories(src/main/cpp/Game)
+include_directories(
+        src/main/cpp/Game
+        src/main/cpp/Tools
+        )
+
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
         native-lib.cpp
         Game/GameControl.cpp
         Game/Game.cpp
+        Tools/FrameCounter.cpp
         )
 
 # Specifies libraries CMake should link to your target library. You

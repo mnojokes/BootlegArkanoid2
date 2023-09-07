@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Vector2D.h"
 #include "GameStates.h"
+#include "../Tools/Vector2D.h"
+#include "../Tools/FrameCounter.h"
 
 class Game
 {
@@ -9,7 +10,7 @@ public:
     Game(void);
     ~Game(void);
 
-    bool Initialize(Vec2D<int> resolution);
+    bool Initialize(Vec2D<int> resolution, uint32_t fps);
     void Update(void);
     void Quit(void);
 
@@ -21,4 +22,6 @@ private:
 
     bool m_shouldRun;
     GameStates m_state;
+
+    FrameCounter m_frameCounter;
 };

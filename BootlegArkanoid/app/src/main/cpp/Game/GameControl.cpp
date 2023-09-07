@@ -7,9 +7,9 @@ namespace
     Game g_gameInstance;
 }
 
-bool GameControl::Initialize(int sizeX, int sizeY)
+bool GameControl::Initialize(int sizeX, int sizeY, float fps)
 {
-    return g_gameInstance.Initialize(Vec2D(sizeX, sizeY));
+    return g_gameInstance.Initialize(Vec2D(sizeX, sizeY), static_cast<uint32_t>(fps));
 }
 
 void GameControl::Run()

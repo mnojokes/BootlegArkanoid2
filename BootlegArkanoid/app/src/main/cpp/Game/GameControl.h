@@ -3,7 +3,7 @@
 class GameControl
 {
 public:
-    static bool Initialize(int sizeX, int sizeY);
+    static bool Initialize(int sizeX, int sizeY, float fps);
     static void Run(void);
     static void Exit(void);
 
