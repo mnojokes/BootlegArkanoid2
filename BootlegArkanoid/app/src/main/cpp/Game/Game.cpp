@@ -22,17 +22,11 @@ Game::~Game()
     if (m_isInitialized) { Quit(); }
 }
 
-bool Game::Initialize(Vec2D<int> resolution, uint32_t fps)
+bool Game::Initialize(ANativeWindow* window, uint32_t fps)
 {
-    m_resolution = resolution;
-    if (resolution.x < minimumAllowedResolutionPixels || resolution.y < minimumAllowedResolutionPixels)
-    {
-        // TODO: log illegal resolution
-        return false;
-    }
-
     m_frameCounter.SetFPSLock(fps);
 
+    m_graphics.Initialize(window);
     m_isInitialized = m_shouldRun = true;
     m_gameLoop = std::thread([this]() { Update(); });
     return m_isInitialized;
@@ -61,7 +55,6 @@ void Game::Quit()
 
     m_gameLoop.join();
 
-    m_resolution = { 0, 0};
     m_state = GameStates::ShowIntro;
     // TODO: return everything to uninitialized state
     m_isInitialized = false;

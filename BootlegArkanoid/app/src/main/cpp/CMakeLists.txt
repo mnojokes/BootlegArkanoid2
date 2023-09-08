@@ -36,6 +36,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         Game/Game.cpp
         Game/ObjectManager.cpp
         Tools/FrameCounter.cpp
+        Graphics/Graphics.cpp
         )
 
 # Specifies libraries CMake should link to your target library. You
@@ -44,4 +45,5 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
 target_link_libraries(${CMAKE_PROJECT_NAME}
         # List libraries link to the target library
         android
-        log)
+        log
+        EGL GLESv2)

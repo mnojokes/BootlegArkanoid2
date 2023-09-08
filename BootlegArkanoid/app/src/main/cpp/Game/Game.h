@@ -4,9 +4,11 @@
 #include "ObjectManager.h"
 #include "../Tools/Vector2D.h"
 #include "../Tools/FrameCounter.h"
+#include "../Graphics/Graphics.h"
 #include <thread>
 #include <mutex>
 #include <vector>
+#include <android/native_window.h>
 
 struct InputEvent;
 
@@ -16,7 +18,7 @@ public:
     Game(void);
     ~Game(void);
 
-    bool Initialize(Vec2D<int> resolution, uint32_t fps);
+    bool Initialize(ANativeWindow* window, uint32_t fps);
     void Update(void);
     void Quit(void);
 
@@ -28,7 +30,6 @@ private:
     void ProcessInput(void);
 
 private:
-    Vec2D<int> m_resolution;
     bool m_isInitialized;
     std::mutex m_runLock;
     std::thread m_gameLoop;
@@ -41,4 +42,5 @@ private:
     FrameCounter m_frameCounter;
     ObjectManager m_levelManager;
     uint32_t m_currentLevel;
+    Graphics m_graphics;
 };

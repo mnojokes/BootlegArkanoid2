@@ -5,7 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.MotionEvent;
-import android.view.WindowMetrics;
+import android.opengl.GLES20;
+import android.view.Surface;
+import android.view.SurfaceView;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.example.bootlegarkanoid.databinding.ActivityMainBinding;
 
@@ -27,9 +31,11 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        Rect windowSize = getWindowManager().getCurrentWindowMetrics().getBounds();
+        SurfaceView surfaceView = findViewById(R.id.surfaceView);
+        Surface surface = surfaceView.getHolder().getSurface();
+
         float refreshRate = Objects.requireNonNull(getDisplay()).getRefreshRate();
-        boolean res = Launch(windowSize.right, windowSize.bottom, refreshRate);
+        boolean res = Launch(surface, refreshRate);
         // TODO: handle failure to launch/intialize
     }
     @Override
@@ -40,6 +46,6 @@ public class MainActivity extends AppCompatActivity {
         
         return SignalInputEvent(action, x, y);
     }
-    public native boolean Launch(int sizeX, int sizeY, float refreshRate);
+    public native boolean Launch(Surface surface, float refreshRate);
     public native boolean SignalInputEvent(int action, float x, float y);
 }
