@@ -2,6 +2,8 @@
 
 enum class GameStates
 {
+    ShowIntro,
     Playing,
-    Paused
+    ShowPause,
+    ShowGameOver
 };

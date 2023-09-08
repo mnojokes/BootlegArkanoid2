@@ -34,6 +34,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         native-lib.cpp
         Game/GameControl.cpp
         Game/Game.cpp
+        Game/ObjectManager.cpp
         Tools/FrameCounter.cpp
         )
 

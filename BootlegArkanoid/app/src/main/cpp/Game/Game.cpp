@@ -11,7 +11,8 @@ namespace
 Game::Game()
     : m_isInitialized(false)
     , m_shouldRun(false)
-    , m_state(GameStates::Paused)
+    , m_state(GameStates::ShowIntro)
+    , m_currentLevel(0)
 {
     m_inputEvents.reserve(inputEventBufferSize);
 }
@@ -61,7 +62,7 @@ void Game::Quit()
     m_gameLoop.join();
 
     m_resolution = { 0, 0};
-    m_state = GameStates::Paused;
+    m_state = GameStates::ShowIntro;
     // TODO: return everything to uninitialized state
     m_isInitialized = false;
 }
@@ -83,6 +84,18 @@ void Game::ProcessInput()
     for (InputEvent& event : m_inputEvents)
     {
         // TODO: process input event
+        switch (m_state)
+        {
+            case GameStates::Playing:
+                // check for taps on pause button
+                // check for taps and moves on the paddle
+                break;
+            case GameStates::ShowIntro:
+            case GameStates::ShowPause:
+            case GameStates::ShowGameOver:
+                // check for taps on menu items
+                break;
+        }
     }
     m_inputEvents.clear();
 }
