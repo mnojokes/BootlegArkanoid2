@@ -2,6 +2,7 @@ package com.example.bootlegarkanoid;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.NativeActivity;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -23,20 +24,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private ActivityMainBinding binding;
+    private SurfaceView m_surfaceView;
+    private Surface m_surface;
 
-    @Override
+   @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        SurfaceView surfaceView = findViewById(R.id.surfaceView);
-        Surface surface = surfaceView.getHolder().getSurface();
+        m_surfaceView = findViewById(R.id.surfaceView);
+        m_surface = m_surfaceView.getHolder().getSurface();
 
         float refreshRate = Objects.requireNonNull(getDisplay()).getRefreshRate();
-        boolean res = Launch(surface, refreshRate);
-        // TODO: handle failure to launch/intialize
+        boolean res = Launch(m_surface, refreshRate);
+        // TODO: handle failure to launch/initialize
     }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -46,6 +49,6 @@ public class MainActivity extends AppCompatActivity {
         
         return SignalInputEvent(action, x, y);
     }
-    public native boolean Launch(Surface surface, float refreshRate);
+    public native boolean Launch(Object surface, float refreshRate);
     public native boolean SignalInputEvent(int action, float x, float y);
 }

@@ -2,6 +2,7 @@
 
 enum class GameStates
 {
+    NONE,
     ShowIntro,
     Playing,
     ShowPause,

@@ -1,8 +1,19 @@
 #include "Graphics.h"
 
+Graphics::Graphics()
+    : m_window(nullptr)
+{}
+
+Graphics::~Graphics()
+{
+    Destroy();
+}
+
 bool Graphics::Initialize(ANativeWindow* window)
 {
     m_window = window;
+
+    /*
     m_EglDisplay = EGL_NO_DISPLAY;
     m_EglSurface = EGL_NO_SURFACE;
     m_EglContext = EGL_NO_CONTEXT;
@@ -13,5 +24,15 @@ bool Graphics::Initialize(ANativeWindow* window)
     {
         return false;
     }
+    */
+
     return true;
+}
+
+void Graphics::Destroy()
+{
+    if (m_window != nullptr)
+    {
+        ANativeWindow_release(m_window);
+    }
 }

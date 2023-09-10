@@ -3,25 +3,36 @@
 #include "GameObjects.h"
 #include <vector>
 
+enum class MenuType
+{
+    Intro,
+    Pause,
+    LevelCompleted,
+    GameOver
+};
+
 class ObjectManager
 {
 public:
-    ObjectManager(void);
+    explicit ObjectManager(const Vec2D<float>& displayResolution);
 
-    void SetDefaultBrickPositionTopLeft(Vec2D<float> position);
-    void SetPaddleDefaults(Vec2D<float> position);
-    void SetBallDefaults(Vec2D<float> position, Vec2D<float> velocity);
-    void ResetPaddle(Paddle& paddle) const;
-    void ResetBall(Ball& ball) const;
-    void ResetBricks(std::vector<Brick>& bricks, uint32_t level) const;
+    // Get default object values (for setting/resetting levels)
+    const MenuItem& GetDefaultPauseButton(void) const;
+    const Paddle& GetDefaultPaddle(void) const;
+    const Ball& GetDefaultBall(void) const;
+    void GetDefaults(std::vector<GameObject>& bricks, uint32_t level) const;
+    void GetDefaults(std::vector<GameObject>& menuItems, MenuType menu) const;
 
+    const Vec2D<float>& GetDisplayResolution(void) const;
     uint32_t GetNumberOfLevels(void) const;
 
 private:
+    Vec2D<float> m_displayResolution;
     uint32_t m_numLevels;
 
-    Vec2D<float> m_defaultFirstBrickPosition;
-    Vec2D<float> m_defaultPaddlePosition;
-    Vec2D<float> m_defaultBallPosition;
-    Vec2D<float> m_defaultBallVelocity;
+    // Object defaults
+    MenuItem m_defaultPauseButton;
+    Brick m_defaultBrick;
+    Paddle m_defaultPaddle;
+    Ball m_defaultBall;
 };

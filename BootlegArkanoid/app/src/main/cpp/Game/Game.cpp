@@ -7,12 +7,14 @@ namespace
     constexpr size_t inputEventBufferSize = 5;
 }
 
-
 Game::Game()
     : m_isInitialized(false)
     , m_shouldRun(false)
-    , m_state(GameStates::ShowIntro)
+    , m_state(GameStates::NONE)
     , m_currentLevel(0)
+    , m_currentLevelFinished(true)
+    , m_levelManager({ 1080, 2220 } ) // TODO: change later to extract resolution from window
+    , m_currentlyDisplayed(nullptr)
 {
     m_inputEvents.reserve(inputEventBufferSize);
 }
@@ -26,20 +28,33 @@ bool Game::Initialize(ANativeWindow* window, uint32_t fps)
 {
     m_frameCounter.SetFPSLock(fps);
 
-    m_graphics.Initialize(window);
-    m_isInitialized = m_shouldRun = true;
-    m_gameLoop = std::thread([this]() { Update(); });
+    bool isInit = m_graphics.Initialize(window);
+    m_isInitialized = m_shouldRun = IsInitialized();
+    if (m_isInitialized)
+    {
+        m_gameLoop = std::thread([this]() { Update(); });
+    }
     return m_isInitialized;
 }
 
 void Game::Update()
 {
+    enum class View
+    {
+        Game,
+        Menu
+    } currentView;
+    GameStates currentState = GameStates::NONE;
+    bool isViewChanged = true; // true means that a new view must be loaded
+
     while(true)
     {
         m_frameCounter.Start();
         m_runLock.lock();
         if (!m_shouldRun) { m_runLock.unlock(); break; }
         m_runLock.unlock();
+
+
 
         ProcessInput();
         // TODO: implement game loop logic here
@@ -91,4 +106,10 @@ void Game::ProcessInput()
         }
     }
     m_inputEvents.clear();
+}
+
+GameStates Game::LoadNextState(GameStates currentState)
+{
+    // TODO
+    return GameStates::NONE;
 }
