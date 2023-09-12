@@ -34,26 +34,28 @@ private:
 
 private:
     // Game runtime control variables
-    bool m_isInitialized;
-    bool m_shouldRun; // controls the main game loop (false == break/terminate)
+    bool m_isInitialized = false;
+    bool m_shouldRun = false; // controls the main game loop (false == break/terminate)
 
     // Game "engine" variables
-    bool m_isStateChanged;
+    bool m_isStateChanged = true;
+    Vector2 m_displaySize;
+    Vector2 m_displayCenter;
     GameStateManager m_state;
     FrameCounter m_frameCounter;
     ObjectManager m_objectManager;
-    uint32_t m_currentLevel;
+    uint32_t m_currentLevel = 0;
     class Renderer* m_renderer;
 
     // Game objects
-    std::vector<GameObject>* m_currentlyDisplayed; // points to objects that are currently in play (bricks or menu items)
-    std::vector<GameObject> m_currentLevelBricks; // stores bricks for current level
-    MenuItem m_pauseButton;
+    std::vector<const MenuItem*> m_menuItems; // menu items currently visible
+    std::vector<Brick> m_currentLevelBricks; // bricks in current level
     Paddle m_paddle;
     Ball m_ball;
 
     // Game flow variables
-    bool m_isPaddlePressed; // input variable: true if player is touching the paddle
+    bool m_isPaddlePressed = false; // input variable: true if player is touching the paddle
+    bool m_newLevelStart = true;
 };
 
 #endif //BOOTLEG_ARKANOID_2_GAME_H

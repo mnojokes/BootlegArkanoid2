@@ -2,6 +2,7 @@
 
 #include "GameObjects.h"
 #include <vector>
+#include "GameStates.h"
 
 enum class MenuType
 {
@@ -14,25 +15,38 @@ enum class MenuType
 class ObjectManager
 {
 public:
-    explicit ObjectManager(const Vector2& displayResolution);
+    ObjectManager(void);
+    void Initialize(const Vector2& screenResolution);
 
     // Get default object values (for setting/resetting levels)
-    const MenuItem& GetDefaultPauseButton(void) const;
     const Paddle& GetDefaultPaddle(void) const;
     const Ball& GetDefaultBall(void) const;
-    void GetDefaults(std::vector<GameObject>& bricks, uint32_t level) const;
-    void GetDefaults(std::vector<GameObject>& menuItems, MenuType menu) const;
 
-    const Vector2& GetDisplayResolution(void) const;
+    void LoadMenuObjects(std::vector<const MenuItem*>& objects, GameStates state);
+    void LoadLevelBricks(std::vector<Brick>& bricks, uint32_t level);
+
+    const std::string& GetTexture(const Brick& obj) const;
+    const std::string& GetTexture(const Paddle& obj) const;
+    const std::string& GetTexture(const Ball& obj) const;
+    const std::string& GetTexture(const MenuItem& obj) const;
+
     uint32_t GetNumberOfLevels(void) const;
 
 private:
-    Vector2 m_displayResolution;
     uint32_t m_numLevels;
 
-    // Object defaults
-    MenuItem m_defaultPauseButton;
+    // Default in-game objects
     Brick m_defaultBrick;
     Paddle m_defaultPaddle;
     Ball m_defaultBall;
+
+    // Default menu items
+    MenuItem m_pauseButton;
+    MenuItem m_playButton;
+    MenuItem m_retryButton;
+    MenuItem m_resumeButton;
+    MenuItem m_quitButton;
+
+    MenuItem m_livesText;
+    MenuItem m_livesNumber;
 };

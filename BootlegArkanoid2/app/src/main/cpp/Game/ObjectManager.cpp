@@ -9,9 +9,33 @@ struct BrickData
 
 namespace
 {
-    constexpr float topMarginFromPauseButton = 5.0f;
+    constexpr float topMarginFromPauseButton = 10.0f;
     constexpr float bottomMarginToPaddle = 200.0f;
     constexpr float defaultBallPositionAbovePaddle = 10.0f;
+}
+
+namespace Texture
+{
+    namespace Brick
+    {
+        const std::vector<std::string> texture = { "Invalid.png", "Brick1.png", "Brick2.png", "Brick3.png " };
+    }
+    namespace Paddle
+    {
+        const std::vector<std::string> texture = { "Paddle.png" };
+    }
+    namespace Ball
+    {
+        const std::vector<std::string> texture = { "Ball.png" };
+    }
+    namespace MenuItem
+    {
+        const std::vector<std::string> texture = { "Start.png", "Resume.png", "Retry.png.", "Quit.png", "Lives.png", "Score.png" };
+    }
+    namespace Numbers
+    {
+        const std::vector<std::string> texture = { "0.png", "1.png", "2.png", "3.png", "4.png", "5.png", "6.png", "7.png", "8.png", "9.png" };
+    }
 }
 
 namespace Menus
@@ -36,60 +60,105 @@ namespace Defaults::Bricks
     std::vector<std::vector<BrickData>> layouts = { Levels::level0, Levels::level1 };
 }
 
-ObjectManager::ObjectManager(const Vector2& displayResolution)
-    : m_displayResolution(displayResolution)
-    , m_numLevels(static_cast<uint32_t>(Defaults::Bricks::layouts.size() - 1))
+ObjectManager::ObjectManager(void)
+    : m_defaultBrick(Texture::Brick::texture[1])
+    , m_defaultPaddle(Texture::Paddle::texture[0])
+    , m_defaultBall(Texture::Ball::texture[0])
+    , m_pauseButton(Texture::MenuItem::texture[0])
+    ,m_playButton(Texture::MenuItem::texture[0])
+    ,m_retryButton(Texture::MenuItem::texture[0])
+    ,m_resumeButton(Texture::MenuItem::texture[0])
+    ,m_quitButton(Texture::MenuItem::texture[0])
+    ,m_livesText(Texture::MenuItem::texture[0])
+    ,m_livesNumber(Texture::MenuItem::texture[0])
+{}
+
+void ObjectManager::Initialize(const Vector2& displayResolution)
 {
+    float top = displayResolution.y * 0.5f;
+    float bottom = -top;
+    float right = displayResolution.x * 0.5f;
+    float left = -right;
+
+    m_numLevels = (static_cast<uint32_t>(Defaults::Bricks::layouts.size() - 1));
+
     // Default brick size - 10 bricks per screen width. Brick height: 50% of width
-    m_defaultBrick.m_halfExtents.x = m_displayResolution.x * 0.1f * 0.5f;
+    m_defaultBrick.m_halfExtents.x = displayResolution.x * 0.1f * 0.5f;
     m_defaultBrick.m_halfExtents.y = m_defaultBrick.m_halfExtents.x * 0.5f;
+    m_defaultBrick.m_render.SetScale(m_defaultBrick.m_halfExtents * 2.0f);
 
     // Pause button - 75% of brick width, square. Positioned in top right corner
-    m_defaultPauseButton.m_halfExtents.x = m_defaultBrick.m_halfExtents.x * 0.75f;
-    m_defaultPauseButton.m_halfExtents.y = m_defaultPauseButton.m_halfExtents.x;
-    m_defaultPauseButton.m_position.x = m_displayResolution.x - m_defaultPauseButton.m_halfExtents.x;
-    m_defaultPauseButton.m_position.y = m_defaultPauseButton.m_halfExtents.y;
+    m_pauseButton.m_halfExtents.x = m_defaultBrick.m_halfExtents.x * 0.75f;
+    m_pauseButton.m_halfExtents.y = m_pauseButton.m_halfExtents.x;
+    m_pauseButton.m_render.SetScale(m_pauseButton.m_halfExtents * 2.0f);
+    Vector2 position;
+    position.x = right - m_pauseButton.m_halfExtents.x;
+    position.y = top - m_pauseButton.m_halfExtents.y;
+    m_pauseButton.m_render.SetPosition(position);
 
-    // Default brick position - 5 pixels below pause button's bottom
-    m_defaultBrick.m_position.x = m_defaultBrick.m_halfExtents.x;
-    m_defaultBrick.m_position.y = m_defaultBrick.m_halfExtents.y + m_defaultPauseButton.m_halfExtents.y * 2.0f + topMarginFromPauseButton;
+    // Default brick position - 10 pixels below pause button's bottom
+    position.x = left + m_defaultBrick.m_halfExtents.x;
+    position.y = top - (m_defaultBrick.m_halfExtents.y + m_pauseButton.m_halfExtents.y * 2.0f + topMarginFromPauseButton);
+    m_defaultBrick.m_render.SetPosition(position);
 
-    // Default paddle - 25% wider than brick. Height: 50% of width
-    m_defaultPaddle.m_halfExtents.x = m_defaultBrick.m_halfExtents.x * 1.25f;
-    m_defaultPaddle.m_halfExtents.y = m_defaultPaddle.m_halfExtents.x * 0.5f;
-    m_defaultPaddle.m_position.x = m_displayResolution.x * 0.5f;
-    m_defaultPaddle.m_position.y = m_displayResolution.y - bottomMarginToPaddle - m_defaultPaddle.m_halfExtents.y;
+    // Default paddle - 50% wider than brick. Height: 50% of width
+    m_defaultPaddle.m_halfExtents.x = m_defaultBrick.m_halfExtents.x * 1.5f;
+    m_defaultPaddle.m_halfExtents.y = m_defaultBrick.m_halfExtents.y;
+    position.x = 0.0f;
+    position.y = bottom + bottomMarginToPaddle + m_defaultPaddle.m_halfExtents.y;
+    m_defaultPaddle.m_render.SetPosition(position);
+    m_defaultPaddle.m_render.SetScale(m_defaultPaddle.m_halfExtents * 2.0f);
+
     // Paddle touch box is 3x higher than paddle object, extends towards the bottom of the display, similar width
     m_defaultPaddle.m_touchBoxHalfExtents.x = m_defaultPaddle.m_halfExtents.x;
     m_defaultPaddle.m_touchBoxHalfExtents.y = m_defaultPaddle.m_halfExtents.y * 3.0f;
-    m_defaultPaddle.m_touchBoxCenter.x = m_defaultPaddle.m_position.x;
-    m_defaultPaddle.m_touchBoxCenter.y = m_defaultPaddle.m_position.y + m_defaultPaddle.m_halfExtents.y * 2.0f;
+    position = m_defaultPaddle.m_render.GetPosition();
+    m_defaultPaddle.m_touchBoxCenter.x = position.x;
+    m_defaultPaddle.m_touchBoxCenter.y = position.y - m_defaultPaddle.m_halfExtents.y * 2.0f;
 
-    // Default ball - 33% of brick width, positioned 5 pixels above paddle
+    // Default ball - 33% of brick width, positioned 10 pixels above paddle
     m_defaultBall.m_radius = (m_defaultBrick.m_halfExtents.x * 2.0f) * 0.33f;
-    m_defaultBall.m_position.x = m_defaultPaddle.m_position.x;
-    m_defaultBall.m_position.y = m_defaultPaddle.m_position.y - defaultBallPositionAbovePaddle;
+    position = m_defaultPaddle.m_render.GetPosition();
+    position.y += (m_defaultPaddle.m_halfExtents.y + m_defaultBall.m_radius + defaultBallPositionAbovePaddle);
+    m_defaultBall.m_render.SetPosition(position);
+    m_defaultBall.m_render.SetScale( {m_defaultBall.m_radius * 2.0f, m_defaultBall.m_radius * 2.0f} );
+
     // Ball starts at 45deg upward right trajectory
-    m_defaultBall.m_velocity.x = m_displayResolution.x * 0.5f;
+    m_defaultBall.m_velocity.x = displayResolution.x * 0.005f;
     m_defaultBall.m_velocity.y = m_defaultBall.m_velocity.x;
 }
 
-const MenuItem& ObjectManager::GetDefaultPauseButton() const
+void ObjectManager::LoadMenuObjects(std::vector<const MenuItem*>& menuItems, GameStates state)
 {
-    return m_defaultPauseButton;
+    menuItems.clear();
+    switch(state)
+    {
+        case GameStates::NONE:
+            // TODO: log invalid state
+            return;
+        case GameStates::Playing:
+            menuItems.push_back(&m_pauseButton);
+            // TODO: add lives and score
+            break;
+        case GameStates::ShowIntro:
+            menuItems.push_back(&m_playButton);
+            menuItems.push_back(&m_quitButton);
+            break;
+        case GameStates::ShowPause:
+            menuItems.push_back(&m_resumeButton);
+            menuItems.push_back(&m_quitButton);
+            break;
+        case GameStates::ShowGameOver:
+            menuItems.push_back(&m_retryButton);
+            menuItems.push_back(&m_quitButton);
+            break;
+        default:
+            // TODO: log unknown state
+            break;
+    }
 }
 
-const Paddle& ObjectManager::GetDefaultPaddle() const
-{
-    return m_defaultPaddle;
-}
-
-const Ball& ObjectManager::GetDefaultBall() const
-{
-    return m_defaultBall;
-}
-
-void ObjectManager::GetDefaults(std::vector<GameObject>& bricks, uint32_t level) const
+void ObjectManager::LoadLevelBricks(std::vector<Brick>& bricks, uint32_t level)
 {
     bricks.clear();
     if (level > m_numLevels)
@@ -106,23 +175,41 @@ void ObjectManager::GetDefaults(std::vector<GameObject>& bricks, uint32_t level)
     for (size_t i = 0; i < numBricks; ++i)
     {
         Brick b = m_defaultBrick;
-        b.m_position.x = m_defaultBrick.m_position.x + m_defaultBrick.m_halfExtents.x * 2.0f * static_cast<float>(Defaults::Bricks::layouts[level][i].m_col);
-        b.m_position.y = m_defaultBrick.m_position.y + m_defaultBrick.m_halfExtents.y * 2.0f * static_cast<float>(Defaults::Bricks::layouts[level][i].m_row);
+        Vector2 position = m_defaultBrick.m_render.GetPosition();
+        position.x += m_defaultBrick.m_halfExtents.x * 2.0f * static_cast<float>(Defaults::Bricks::layouts[level][i].m_col);
+        position.y -= m_defaultBrick.m_halfExtents.y * 2.0f * static_cast<float>(Defaults::Bricks::layouts[level][i].m_row);
+        b.m_render.SetPosition(position);
         b.m_lives = Defaults::Bricks::layouts[level][i].m_lives;
         // TODO: assign material/texture based on lives
         bricks.push_back(b);
     }
 }
 
-void ObjectManager::GetDefaults(std::vector<GameObject>& menuItems, MenuType menu) const
+const Paddle& ObjectManager::GetDefaultPaddle() const
 {
-    menuItems.clear();
-    // TODO
+    return m_defaultPaddle;
 }
 
-const Vector2& ObjectManager::GetDisplayResolution() const
+const Ball& ObjectManager::GetDefaultBall() const
 {
-    return m_displayResolution;
+    return m_defaultBall;
+}
+
+const std::string& ObjectManager::GetTexture(const Brick& obj) const
+{
+    return Texture::Brick::texture[obj.m_lives];
+}
+const std::string& ObjectManager::GetTexture(const Paddle& obj) const
+{
+    return Texture::Paddle::texture[0];
+}
+const std::string& ObjectManager::GetTexture(const Ball& obj) const
+{
+    return Texture::Ball::texture[0];
+}
+const std::string& ObjectManager::GetTexture(const MenuItem& obj) const
+{
+    return Texture::MenuItem::texture[0];
 }
 
 uint32_t ObjectManager::GetNumberOfLevels() const
