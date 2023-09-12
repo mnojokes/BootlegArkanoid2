@@ -25,11 +25,6 @@ public:
     void LoadMenuObjects(std::vector<const MenuItem*>& objects, GameStates state);
     void LoadLevelBricks(std::vector<Brick>& bricks, uint32_t level);
 
-    const std::string& GetTexture(const Brick& obj) const;
-    const std::string& GetTexture(const Paddle& obj) const;
-    const std::string& GetTexture(const Ball& obj) const;
-    const std::string& GetTexture(const MenuItem& obj) const;
-
     uint32_t GetNumberOfLevels(void) const;
 
 private:

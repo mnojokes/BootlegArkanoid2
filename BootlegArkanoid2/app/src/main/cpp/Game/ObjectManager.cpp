@@ -9,9 +9,9 @@ struct BrickData
 
 namespace
 {
-    constexpr float topMarginFromPauseButton = 10.0f;
+    constexpr float topMarginFromPauseButton = 100.0f;
     constexpr float bottomMarginToPaddle = 200.0f;
-    constexpr float defaultBallPositionAbovePaddle = 10.0f;
+    constexpr float defaultBallPositionAbovePaddle = 40.0f;
 }
 
 namespace Texture
@@ -30,7 +30,7 @@ namespace Texture
     }
     namespace MenuItem
     {
-        const std::vector<std::string> texture = { "Start.png", "Resume.png", "Retry.png.", "Quit.png", "Lives.png", "Score.png" };
+        const std::vector<std::string> texture = { "Pause.png", "Start.png", "Resume.png", "Retry.png.", "Quit.png", "Lives.png", "Score.png" };
     }
     namespace Numbers
     {
@@ -124,8 +124,9 @@ void ObjectManager::Initialize(const Vector2& displayResolution)
     m_defaultBall.m_render.SetScale( {m_defaultBall.m_radius * 2.0f, m_defaultBall.m_radius * 2.0f} );
 
     // Ball starts at 45deg upward right trajectory
-    m_defaultBall.m_velocity.x = displayResolution.x * 0.005f;
+    m_defaultBall.m_velocity.x = displayResolution.x * 0.001f;
     m_defaultBall.m_velocity.y = m_defaultBall.m_velocity.x;
+    // TODO: change speed after implementing collisions
 }
 
 void ObjectManager::LoadMenuObjects(std::vector<const MenuItem*>& menuItems, GameStates state)
@@ -193,23 +194,6 @@ const Paddle& ObjectManager::GetDefaultPaddle() const
 const Ball& ObjectManager::GetDefaultBall() const
 {
     return m_defaultBall;
-}
-
-const std::string& ObjectManager::GetTexture(const Brick& obj) const
-{
-    return Texture::Brick::texture[obj.m_lives];
-}
-const std::string& ObjectManager::GetTexture(const Paddle& obj) const
-{
-    return Texture::Paddle::texture[0];
-}
-const std::string& ObjectManager::GetTexture(const Ball& obj) const
-{
-    return Texture::Ball::texture[0];
-}
-const std::string& ObjectManager::GetTexture(const MenuItem& obj) const
-{
-    return Texture::MenuItem::texture[0];
 }
 
 uint32_t ObjectManager::GetNumberOfLevels() const

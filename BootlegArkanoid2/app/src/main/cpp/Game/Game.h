@@ -30,9 +30,6 @@ public:
     bool IsInitialized(void) const;
 
 private:
-    std::vector<GameObject>* LoadObjectsForNewState(GameStates newState);
-
-private:
     // Game runtime control variables
     bool m_isInitialized = false;
     bool m_shouldRun = false; // controls the main game loop (false == break/terminate)
@@ -55,7 +52,6 @@ private:
 
     // Game flow variables
     bool m_isPaddlePressed = false; // input variable: true if player is touching the paddle
-    bool m_newLevelStart = true;
 };
 
 #endif //BOOTLEG_ARKANOID_2_GAME_H

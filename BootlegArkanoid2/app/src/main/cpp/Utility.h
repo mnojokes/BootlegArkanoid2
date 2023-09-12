@@ -26,8 +26,6 @@ public:
 
     static float *buildIdentityMatrix(float *outMatrix);
     static float *buildTransformMatrix(float *outMatrix, const Vector2& position, const Vector2& scale);
-
-    static bool IsPointInQuad(const Vector2& point, const Vector2& quadCenter, const Vector2& halfExtents);
 };
 
 #endif //ANDROIDGLINVESTIGATIONS_UTILITY_H

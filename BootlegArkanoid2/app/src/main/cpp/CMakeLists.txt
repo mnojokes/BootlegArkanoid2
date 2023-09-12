@@ -15,7 +15,8 @@ add_library(bootlegarkanoid2 SHARED
         Utility.cpp
         Game/Game.cpp
         Game/FrameCounter.cpp
-        Game/ObjectManager.cpp)
+        Game/ObjectManager.cpp
+        Game/Collider.cpp)
 
 # Searches for a package provided by the game activity dependency
 find_package(game-activity REQUIRED CONFIG)

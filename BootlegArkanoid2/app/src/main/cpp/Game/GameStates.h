@@ -24,6 +24,10 @@ public:
     {
         return m_state;
     }
+    void SetCurrentState(GameStates state)
+    {
+        m_state = state;
+    }
 
 private:
     GameStates m_state = GameStates::NONE;

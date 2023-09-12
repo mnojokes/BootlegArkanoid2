@@ -3,7 +3,7 @@
 #include "../RenderObject.h"
 #include <vector>
 #include <game-activity/native_app_glue/android_native_app_glue.h>
-#include "../Utility.h"
+#include "Collider.h"
 
 Game::Game()
     : m_renderer(nullptr)
@@ -36,6 +36,10 @@ bool Game::Initialize(android_app* app)
 
     m_paddle = m_objectManager.GetDefaultPaddle();
     m_ball = m_objectManager.GetDefaultBall();
+
+    // TODO: remove after implementing state machine
+    m_state.SetCurrentState(GameStates::Playing);
+    /////////////////////
 
     m_isInitialized = true;
     return m_isInitialized;
@@ -79,6 +83,12 @@ void Game::RenderFrame()
         v.push_back(&br.m_render);
     }
 
+    for (const MenuItem* mi : m_menuItems)
+    {
+        // TODO: check if visible, render only visible objects
+        v.push_back(&mi->m_render);
+    }
+
     v.push_back(&m_paddle.m_render);
     v.push_back(&m_ball.m_render);
 
@@ -104,7 +114,7 @@ void Game::ProcessInput(const InputEvent& input)
     coords.x = input.x - m_displayCenter.x;
     coords.y = -input.y + m_displayCenter.y;
 
-    if (true)
+    if (m_state.IsShowingGame())
     {
         if (m_isPaddlePressed)
         {
@@ -125,7 +135,7 @@ void Game::ProcessInput(const InputEvent& input)
                     m_paddle.m_touchBoxCenter.x = pos.x;
                     break;
                 case InputAction::ActionUp:
-                    if (Utility::IsPointInQuad(coords, m_paddle.m_touchBoxCenter, m_paddle.m_touchBoxHalfExtents))
+                    if (Collider::IsPointInQuad(coords, m_paddle.m_touchBoxCenter, m_paddle.m_touchBoxHalfExtents))
                     {
                         m_isPaddlePressed = false;
                     }
@@ -141,7 +151,7 @@ void Game::ProcessInput(const InputEvent& input)
             {
                 case InputAction::ActionDown:
                     // TODO: only handle touches on paddle or menu items
-                    if (Utility::IsPointInQuad(coords, m_paddle.m_touchBoxCenter, m_paddle.m_touchBoxHalfExtents))
+                    if (Collider::IsPointInQuad(coords, m_paddle.m_touchBoxCenter, m_paddle.m_touchBoxHalfExtents))
                     {
                         m_isPaddlePressed = true;
                     }
@@ -157,35 +167,10 @@ void Game::ProcessInput(const InputEvent& input)
         switch (input.m_action)
         {
             case InputAction::ActionDown:
-
+                // TODO: handle touches on menu items
                 break;
             default:
                 break;
         }
     }
 }
-
-std::vector<GameObject>* Game::LoadObjectsForNewState(GameStates newState)
-{
-    /*
-    if (newState == GameStates::Playing)
-    {
-        if (!m_currentLevelBricks.empty())
-        {
-            return &m_currentLevelBricks;
-        }
-        else if (m_currentLevel <= m_objectManager.GetNumberOfLevels())
-        {
-            m_objectManager.GetDefaults(m_currentLevelBricks, m_currentLevel);
-            return &m_currentLevelBricks;
-        }
-
-        newState = GameStates::ShowGameOver;
-    }
-
-    return nullptr;
-    // TODO: load menu items here
-     */
-}
-
-
