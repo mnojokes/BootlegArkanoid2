@@ -14,12 +14,12 @@ Renderer::Renderer(android_app *app)
         , m_height(-1)
         , m_textureManager(m_app->activity->assetManager)
         , m_rectVertices{
-                {Vector3{1, 1, 0}, Vector2{0, 0}},
-                {Vector3{-1, 1, 0}, Vector2{1, 0}},
-                {Vector3{-1, -1, 0}, Vector2{1, 1}},
-                {Vector3{1, 1, 0}, Vector2{0, 0}},
-                {Vector3{-1, -1, 0}, Vector2{1, 1}},
-                {Vector3{1, -1, 0}, Vector2{0, 1}}}
+                {Vector3{-0.5f, 0.5f, 0}, Vector2{0, 0}},
+                {Vector3{0.5f, 0.5f, 0}, Vector2{1, 0}},
+                {Vector3{0.5f, -0.5f, 0}, Vector2{1, 1}},
+                {Vector3{-0.5f, 0.5f, 0}, Vector2{0, 0}},
+                {Vector3{0.5f, -0.5f, 0}, Vector2{1, 1}},
+                {Vector3{-0.5f, -0.5f, 0}, Vector2{0, 1}}}
 {}
 
 Renderer::~Renderer()
@@ -240,16 +240,7 @@ void Renderer::Render(const std::vector<const RenderObject*> m_renderObjects)
 
             float transform[16];
 
-            //Utility::buildTransformMatrix(transform, renderObject->GetPosition(), renderObject->GetScale(), {static_cast<float>(m_width), static_cast<float>(m_height)});
-            // TODO: remove after testing
-            // fake scale matrix of 0.1
-            Utility::buildIdentityMatrix(transform);
-            transform[0] = 0.5f;
-            transform[5] = 0.5f;
-            // fake translation matrix of random x and y
-            transform[12] = (rand() % 20 - 10) * 0.1f;
-            transform[13] = (rand() % 20 - 10) * 0.1f;
-            ////////////////////////////////////////////////////////////////////////////
+            Utility::buildTransformMatrix(transform, renderObject->GetPosition(), renderObject->GetScale());
 
             glUniformMatrix4fv(m_vertexShaderAttributeTransform, 1, false, transform);
 
@@ -283,12 +274,7 @@ void Renderer::UpdateRenderArea()
 
         float projectionMatrix[16] = {0};
 
-        Utility::buildOrthographicMatrix(
-                projectionMatrix,
-                2.0f,
-                float(m_width) / m_height,
-                -1.0f,
-                1.0f);
+        Utility::buildOrthographicMatrix(projectionMatrix, static_cast<float>(m_width), static_cast<float>(m_height));
 
         glUniformMatrix4fv(m_vertexShaderAttributeProjection, 1, false, projectionMatrix);
     }

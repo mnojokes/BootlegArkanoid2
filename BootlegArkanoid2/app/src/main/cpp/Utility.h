@@ -22,15 +22,10 @@ public:
      * @return the generated matrix, this will be the same as @a outMatrix so you can chain calls
      *     together if needed
      */
-    static float *buildOrthographicMatrix(
-            float *outMatrix,
-            float halfHeight,
-            float aspect,
-            float near,
-            float far);
+    static float *buildOrthographicMatrix(float *outMatrix, float width, float height);
 
     static float *buildIdentityMatrix(float *outMatrix);
-    static float *buildTransformMatrix(float *outMatrix, const Vector2& translate, const Vector2& scale, const Vector2& screenSize);
+    static float *buildTransformMatrix(float *outMatrix, const Vector2& position, const Vector2& scale);
 };
 
 #endif //ANDROIDGLINVESTIGATIONS_UTILITY_H

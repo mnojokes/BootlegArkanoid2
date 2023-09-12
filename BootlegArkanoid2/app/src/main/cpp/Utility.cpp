@@ -27,27 +27,24 @@ bool Utility::checkAndLogGlError(bool alwaysLog) {
 }
 
 float *
-Utility::buildOrthographicMatrix(float *outMatrix, float halfHeight, float aspect, float near,
-                                 float far) {
-    float halfWidth = halfHeight * aspect;
-
+Utility::buildOrthographicMatrix(float *outMatrix, float width, float height) {
     // column 1
-    outMatrix[0] = 1.f / halfWidth;
+    outMatrix[0] = 2.0f / width;
     outMatrix[1] = 0.f;
     outMatrix[2] = 0.f;
     outMatrix[3] = 0.f;
 
     // column 2
     outMatrix[4] = 0.f;
-    outMatrix[5] = 1.f / halfHeight;
+    outMatrix[5] = 2.0f / height;
     outMatrix[6] = 0.f;
     outMatrix[7] = 0.f;
 
     // column 3
     outMatrix[8] = 0.f;
     outMatrix[9] = 0.f;
-    outMatrix[10] = -2.f / (far - near);
-    outMatrix[11] = -(far + near) / (far - near);
+    outMatrix[10] = 0.f;
+    outMatrix[11] = 0.f;
 
     // column 4
     outMatrix[12] = 0.f;
@@ -86,17 +83,17 @@ float *Utility::buildIdentityMatrix(float *outMatrix) {
     return outMatrix;
 }
 
-float *Utility::buildTransformMatrix(float *outMatrix, const Vector2& translate, const Vector2& scale, const Vector2& screenSize)
+float *Utility::buildTransformMatrix(float *outMatrix, const Vector2& position, const Vector2& scale)
 {
     // column 1
-    outMatrix[0] = scale.x / screenSize.x;
+    outMatrix[0] = scale.x;
     outMatrix[1] = 0.f;
     outMatrix[2] = 0.f;
     outMatrix[3] = 0.f;
 
     // column 2
     outMatrix[4] = 0.f;
-    outMatrix[5] = scale.y / screenSize.y;
+    outMatrix[5] = scale.y;
     outMatrix[6] = 0.f;
     outMatrix[7] = 0.f;
 
@@ -107,8 +104,8 @@ float *Utility::buildTransformMatrix(float *outMatrix, const Vector2& translate,
     outMatrix[11] = 0.f;
 
     // column 4
-    outMatrix[12] = translate.x;
-    outMatrix[13] = translate.y;
+    outMatrix[12] = position.x;
+    outMatrix[13] = position.y;
     outMatrix[14] = 0.f;
     outMatrix[15] = 1.f;
 
