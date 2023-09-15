@@ -15,6 +15,9 @@ public:
     bool Initialize(void);
     void Render(const std::vector<const RenderObject*> m_renderObjects);
 
+    // App ptr is stored in renderer for it always uses it. To avoid duplication, other systems can get the app ptr from here.
+    android_app* GetAppPtr(void) { return m_app; }
+
 private:
     /*!
      * @brief we have to check every frame to see if the framebuffer has changed in size. If it has,

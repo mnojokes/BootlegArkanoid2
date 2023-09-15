@@ -9,6 +9,7 @@ public class MainActivity extends GameActivity {
     static {
         System.loadLibrary("bootlegarkanoid2");
     }
+
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);

@@ -6,7 +6,8 @@ enum class GameStates
     ShowIntro,
     Playing,
     ShowPause,
-    ShowGameOver
+    ShowGameOver,
+    Quit
 };
 
 class GameStateManager
@@ -14,7 +15,7 @@ class GameStateManager
 public:
     bool IsShowingMenu(void) const
     {
-        return m_state == GameStates::ShowIntro || m_state == GameStates::ShowPause || m_state == GameStates::ShowGameOver;
+        return m_state != GameStates::Playing;
     }
     bool IsShowingGame(void) const
     {

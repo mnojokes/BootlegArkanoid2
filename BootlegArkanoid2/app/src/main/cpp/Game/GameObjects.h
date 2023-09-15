@@ -3,6 +3,7 @@
 #include "../Vector.h"
 #include <string>
 #include "../RenderObject.h"
+#include "GameStates.h"
 
 enum class ObjectType
 {
@@ -84,8 +85,10 @@ class MenuItem : public GameObject
 public:
     MenuItem(std::string texture)
     : GameObject(texture, ObjectType::MenuItem, ColliderShape::None, true)
+    , m_targetState(GameStates::NONE)
     {}
 
 public:
     Vector2 m_halfExtents;
+    GameStates m_targetState; // state that the menu item is supposed to invoke
 };

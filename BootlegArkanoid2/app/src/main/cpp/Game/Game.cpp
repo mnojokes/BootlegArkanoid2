@@ -13,10 +13,7 @@ Game::Game()
 
 Game::~Game()
 {
-    if (m_isInitialized)
-    {
-        Exit();
-    }
+    // TODO: destruction logic
 }
 
 bool Game::Initialize(android_app* app)
@@ -37,11 +34,8 @@ bool Game::Initialize(android_app* app)
     m_paddle = m_objectManager.GetDefaultPaddle();
     m_ball = m_objectManager.GetDefaultBall();
 
-    // TODO: remove after implementing state machine
-    m_state.SetCurrentState(GameStates::Playing);
-    /////////////////////
-
-    m_isInitialized = true;
+    m_state.SetCurrentState(GameStates::ShowIntro);
+    m_isInitialized = m_isStateChanged = true;
     return m_isInitialized;
 }
 
@@ -56,31 +50,55 @@ void Game::EndFrame()
 
 void Game::UpdateObjects()
 {
-    if (m_currentLevelBricks.empty())
-    {
-        m_objectManager.LoadLevelBricks(m_currentLevelBricks, m_currentLevel);
-        ++m_currentLevel;
-    }
     if (m_isStateChanged)
     {
+        if (m_state.GetCurrentState() == GameStates::Quit)
+        {
+            // TODO: figure out the way to correctly signal app termination to the top Java layer
+            return;
+        }
+        if (m_state.IsShowingGame())
+        {
+            if (m_currentLevelBricks.empty())
+            {
+                m_objectManager.LoadLevelBricks(m_currentLevelBricks, m_currentLevel);
+            }
+        }
         m_objectManager.LoadMenuObjects(m_menuItems, m_state.GetCurrentState());
         m_isStateChanged = false;
     }
 
-    Vector2 pos = m_ball.m_render.GetPosition();
-    pos.x += m_ball.m_velocity.x * (1.0f - m_frameCounter.GetDelta());
-    pos.y += m_ball.m_velocity.y * (1.0f - m_frameCounter.GetDelta());
-    // TODO: handle collisions with boundaries and other objects
-    m_ball.m_render.SetPosition(pos);
+    // Update game objects when the active state is Playing
+    if (m_state.IsShowingGame())
+    {
+        Vector2 pos = m_ball.m_render.GetPosition();
+        pos.x += m_ball.m_velocity.x * (1.0f - m_frameCounter.GetDelta());
+        pos.y += m_ball.m_velocity.y * (1.0f - m_frameCounter.GetDelta());
+        // TODO: handle collisions with boundaries and other objects
+        m_ball.m_render.SetPosition(pos);
+
+        if (m_currentLevelBricks.empty())
+        { // all bricks destroyed
+            ++m_currentLevel;
+            // TODO check if all levels completed, change state
+
+            m_isStateChanged = true;
+        }
+    }
 }
 
 void Game::RenderFrame()
 {
     std::vector<const RenderObject*> v;
-    for (const Brick& br : m_currentLevelBricks)
+    if (m_state.IsShowingGame())
     {
-        // TODO: check if visible, render only visible objects
-        v.push_back(&br.m_render);
+        for (const Brick& br : m_currentLevelBricks)
+        {
+            // TODO: check if visible, render only visible objects
+            v.push_back(&br.m_render);
+        }
+        v.push_back(&m_paddle.m_render);
+        v.push_back(&m_ball.m_render);
     }
 
     for (const MenuItem* mi : m_menuItems)
@@ -88,9 +106,6 @@ void Game::RenderFrame()
         // TODO: check if visible, render only visible objects
         v.push_back(&mi->m_render);
     }
-
-    v.push_back(&m_paddle.m_render);
-    v.push_back(&m_ball.m_render);
 
     m_renderer->Render(v);
 }
@@ -135,10 +150,7 @@ void Game::ProcessInput(const InputEvent& input)
                     m_paddle.m_touchBoxCenter.x = pos.x;
                     break;
                 case InputAction::ActionUp:
-                    if (Collider::IsPointInQuad(coords, m_paddle.m_touchBoxCenter, m_paddle.m_touchBoxHalfExtents))
-                    {
-                        m_isPaddlePressed = false;
-                    }
+                    m_isPaddlePressed = false;
                     break;
                 case InputAction::ActionDown:
                     // TODO: if menu item pressed, release paddle, switch context;

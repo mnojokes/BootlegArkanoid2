@@ -28,7 +28,7 @@ public:
     uint32_t GetNumberOfLevels(void) const;
 
 private:
-    uint32_t m_numLevels;
+    uint32_t m_numLevels{};
 
     // Default in-game objects
     Brick m_defaultBrick;

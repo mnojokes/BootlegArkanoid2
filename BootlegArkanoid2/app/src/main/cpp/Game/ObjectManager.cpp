@@ -18,29 +18,34 @@ namespace Texture
 {
     namespace Brick
     {
-        const std::vector<std::string> texture = { "Invalid.png", "Brick1.png", "Brick2.png", "Brick3.png " };
+        const std::vector<std::string> texture = { "Game/Invalid.png", "Game/Brick1.png", "Game/Brick2.png", "Game/Brick3.png " };
     }
     namespace Paddle
     {
-        const std::vector<std::string> texture = { "Paddle.png" };
+        const std::vector<std::string> texture = { "Game/Paddle.png" };
     }
     namespace Ball
     {
-        const std::vector<std::string> texture = { "Ball.png" };
+        const std::vector<std::string> texture = { "Game/Ball.png" };
     }
     namespace MenuItem
     {
-        const std::vector<std::string> texture = { "Pause.png", "Start.png", "Resume.png", "Retry.png.", "Quit.png", "Lives.png", "Score.png" };
+        enum class Menu
+        {
+            Pause,
+            Play,
+            Resume,
+            Retry,
+            Quit,
+            Lives,
+            Score
+        };
+        const std::vector<std::string> texture = { "Menu/Pause.png", "Menu/Play.png", "Menu/Resume.png", "Menu/Retry.png", "Menu/Quit.png", "Menu/Lives.png", "Menu/Score.png" };
     }
     namespace Numbers
     {
-        const std::vector<std::string> texture = { "0.png", "1.png", "2.png", "3.png", "4.png", "5.png", "6.png", "7.png", "8.png", "9.png" };
+        const std::vector<std::string> texture = { "Menu/0.png", "Menu/1.png", "Menu/2.png", "Menu/3.png", "Menu/4.png", "Menu/5.png", "Menu/6.png", "Menu/7.png", "Menu/8.png", "Menu/9.png" };
     }
-}
-
-namespace Menus
-{
-    const std::vector<std::vector<MenuItem>> menuIntro;
 }
 
 namespace Levels
@@ -60,18 +65,27 @@ namespace Defaults::Bricks
     std::vector<std::vector<BrickData>> layouts = { Levels::level0, Levels::level1 };
 }
 
-ObjectManager::ObjectManager(void)
+ObjectManager::ObjectManager()
     : m_defaultBrick(Texture::Brick::texture[1])
     , m_defaultPaddle(Texture::Paddle::texture[0])
     , m_defaultBall(Texture::Ball::texture[0])
     , m_pauseButton(Texture::MenuItem::texture[0])
-    ,m_playButton(Texture::MenuItem::texture[0])
-    ,m_retryButton(Texture::MenuItem::texture[0])
-    ,m_resumeButton(Texture::MenuItem::texture[0])
-    ,m_quitButton(Texture::MenuItem::texture[0])
-    ,m_livesText(Texture::MenuItem::texture[0])
-    ,m_livesNumber(Texture::MenuItem::texture[0])
-{}
+    , m_playButton(Texture::MenuItem::texture[1])
+    , m_resumeButton(Texture::MenuItem::texture[2])
+    , m_retryButton(Texture::MenuItem::texture[3])
+    , m_quitButton(Texture::MenuItem::texture[4])
+    , m_livesText(Texture::MenuItem::texture[5])
+    , m_livesNumber(Texture::MenuItem::texture[6])
+{
+    m_numLevels = (static_cast<uint32_t>(Defaults::Bricks::layouts.size() - 1));
+
+    m_pauseButton.m_targetState = GameStates::ShowPause;
+    m_playButton.m_targetState = m_resumeButton.m_targetState = m_retryButton.m_targetState = GameStates::Playing;
+    m_quitButton.m_targetState = GameStates::Quit;
+
+    m_livesNumber.m_isTouchable = false;
+    m_livesNumber.m_isTouchable = false;
+}
 
 void ObjectManager::Initialize(const Vector2& displayResolution)
 {
@@ -80,7 +94,21 @@ void ObjectManager::Initialize(const Vector2& displayResolution)
     float right = displayResolution.x * 0.5f;
     float left = -right;
 
-    m_numLevels = (static_cast<uint32_t>(Defaults::Bricks::layouts.size() - 1));
+    // Buttons take up 3/4 of the display width, height is 50% of width
+    m_playButton.m_halfExtents.x = displayResolution.x * 0.66f * 0.5f;
+    m_playButton.m_halfExtents.y = m_playButton.m_halfExtents.x * 0.5f;
+
+    m_resumeButton.m_halfExtents = m_retryButton.m_halfExtents = m_quitButton.m_halfExtents = m_playButton.m_halfExtents;
+    m_playButton.m_render.SetScale(m_playButton.m_halfExtents * 2.0f);
+    m_resumeButton.m_render.SetScale(m_resumeButton.m_halfExtents * 2.0f);
+    m_retryButton.m_render.SetScale(m_retryButton.m_halfExtents * 2.0f);
+    m_quitButton.m_render.SetScale(m_quitButton.m_halfExtents * 2.0f);
+
+    float gapBetweenButtons = displayResolution.y * 0.05f;
+    m_playButton.m_render.SetPosition({0.0f, m_playButton.m_halfExtents.y + gapBetweenButtons * 0.5f });
+    m_resumeButton.m_render.SetPosition(m_playButton.m_render.GetPosition());
+    m_retryButton.m_render.SetPosition(m_playButton.m_render.GetPosition());
+    m_quitButton.m_render.SetPosition({ 0.0f, -m_quitButton.m_halfExtents.y - gapBetweenButtons * 0.5f });
 
     // Default brick size - 10 bricks per screen width. Brick height: 50% of width
     m_defaultBrick.m_halfExtents.x = displayResolution.x * 0.1f * 0.5f;
