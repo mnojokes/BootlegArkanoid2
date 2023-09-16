@@ -4,6 +4,7 @@
 #include "InputEvent.h"
 #include "GameStates.h"
 #include "ObjectManager.h"
+#include "Collider.h"
 #include "../Vector.h"
 #include "FrameCounter.h"
 #include <thread>
@@ -37,12 +38,14 @@ private:
     // Game "engine" variables
     bool m_isStateChanged = true;
     Vector2 m_displaySize;
-    Vector2 m_displayCenter;
+    Vector2 m_displayCenterTouch;
     GameStateManager m_state;
     FrameCounter m_frameCounter;
     ObjectManager m_objectManager;
     uint32_t m_currentLevel = 0;
+    Collider m_collider;
     class Renderer* m_renderer;
+
 
     // Game objects
     std::vector<const MenuItem*> m_menuItems; // menu items currently visible

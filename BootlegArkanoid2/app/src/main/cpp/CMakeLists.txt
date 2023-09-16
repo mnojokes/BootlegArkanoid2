@@ -13,6 +13,7 @@ add_library(bootlegarkanoid2 SHARED
         Renderer.cpp
         TextureManager.cpp
         Utility.cpp
+        Vector.cpp
         Game/Game.cpp
         Game/FrameCounter.cpp
         Game/ObjectManager.cpp
