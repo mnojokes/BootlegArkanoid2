@@ -18,8 +18,11 @@ public:
     bool operator==(const Vector2& rhs) const;
     bool operator!=(const Vector2& rhs) const;
 
-    Vector2 Cross(void) const;
     float Dot(const Vector2& rhs) const;
+
+    float Magnitude(void) const;
+    float MagnitudeSq(void) const;
+    Vector2 Normalize(void) const;
 
 public:
     float x;
@@ -31,6 +34,14 @@ struct Vector3
     float x = 0.0f;
     float y = 0.0f;
     float z = 0.0f;
+};
+
+struct Color
+{
+    float r = 1.0f;
+    float g = 1.0f;
+    float b = 1.0f;
+    float a = 1.0f;
 };
 
 #endif //BOOTLEG_ARKANOID_2_VECTOR_H

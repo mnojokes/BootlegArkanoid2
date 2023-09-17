@@ -147,11 +147,14 @@ bool Renderer::Initialize()
 
             uniform sampler2D uTexture;
 
+            uniform vec4 uColor;
+
             out vec4 outColor;
 
             void main()
             {
                 outColor = texture(uTexture, fragUV);
+                outColor *= uColor;
             }
         )fragment";
 
@@ -176,6 +179,7 @@ bool Renderer::Initialize()
         m_vertexShaderAttributeUV = glGetAttribLocation(m_shaderProgram, "inUV");
         m_vertexShaderAttributeProjection = glGetUniformLocation(m_shaderProgram, "uProjection");
         m_vertexShaderAttributeTransform = glGetUniformLocation(m_shaderProgram, "uTransform");
+        m_fragmentShaderAttributeColor = glGetUniformLocation(m_shaderProgram, "uColor");
     }
     else
     {
@@ -246,6 +250,8 @@ void Renderer::Render(const std::vector<const RenderObject*> m_renderObjects)
 
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, texture->GetID());
+            const Color& col = renderObject->GetColor();
+            glUniform4f(m_fragmentShaderAttributeColor, col.r, col.g, col.b, col.a);
 
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }

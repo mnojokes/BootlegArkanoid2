@@ -39,6 +39,7 @@ private:
     GLint m_vertexShaderAttributeProjection;
     GLint m_vertexShaderAttributeTransform;
     GLint m_shaderProgram;
+    GLint m_fragmentShaderAttributeColor;
 };
 
 #endif //ANDROIDGLINVESTIGATIONS_RENDERER_H

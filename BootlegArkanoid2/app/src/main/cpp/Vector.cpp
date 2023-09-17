@@ -1,4 +1,5 @@
 #include "Vector.h"
+#include <cmath>
 
 Vector2::Vector2()
         : x(0.0f)
@@ -68,12 +69,32 @@ bool Vector2::operator!=(const Vector2& rhs) const
     return !(*this == rhs);
 }
 
-Vector2 Vector2::Cross() const
-{
-    return { -y, x};
-}
-
 float Vector2::Dot(const Vector2& rhs) const
 {
     return (x * rhs.x) + (y * rhs.y);
+}
+
+float Vector2::Magnitude(void) const
+{
+    float magSq = (x * x) + (y * y);
+    return sqrt(magSq);
+}
+
+float Vector2::MagnitudeSq(void) const
+{
+    return (x * x) + (y * y);
+}
+
+Vector2 Vector2::Normalize(void) const
+{
+    Vector2 v;
+
+    float mag = Magnitude();
+    if (mag != 0.0f)
+    {
+        v.x = x / mag;
+        v.y = y / mag;
+    }
+
+    return v;
 }
