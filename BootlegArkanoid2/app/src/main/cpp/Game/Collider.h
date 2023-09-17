@@ -3,6 +3,13 @@
 
 #include "../Vector.h"
 #include "GameObjects.h"
+#include <vector>
+
+struct Intersection
+{
+    float m_time = -1.0f; // no collision
+    Vector2 m_point;
+};
 
 class Collider
 {
@@ -13,14 +20,14 @@ public:
     static bool IsPointInQuad(const Vector2& point, const Vector2& quadCenter, const Vector2& halfExtents);
 
     // ProcessBallMovement: returns new ball position considering its velocity and collisions with objects and boundaries
-    Vector2 ProcessBallMovement(const Ball& ball, std::vector<Brick>& bricks, float deltaTime) const;
+    Vector2 ProcessBallMovement(Ball& ball, const Paddle& paddle, std::vector<Brick>& bricks, float deltaTime) const;
 
     // ProcessPaddleMovement: returns new paddle position considering its collisions with game space boundaries
     // Paddle moves only on the X axis
     Vector2 ProcessPaddleMovementX(const Paddle& paddle, const Vector2& position) const;
 
 private:
-    void CircleLineCollision(const Vector2& position, float radius, const Vector2& a, const Vector2& b);
+    Intersection CircleLineCollision(const Vector2& position, const Vector2& direction, float radius, const Vector2& a, const Vector2& b) const;
 
 private:
     Vector2 m_boundaryTopLeft;

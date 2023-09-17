@@ -18,7 +18,7 @@ namespace Texture
 {
     namespace Brick
     {
-        const std::vector<std::string> texture = { "Game/Invalid.png", "Game/Brick1.png", "Game/Brick2.png", "Game/Brick3.png " };
+        const std::vector<std::string> texture = { "Game/Brick.png" };
     }
     namespace Paddle
     {
@@ -66,7 +66,7 @@ namespace Defaults::Bricks
 }
 
 ObjectManager::ObjectManager()
-    : m_defaultBrick(Texture::Brick::texture[1])
+    : m_defaultBrick(Texture::Brick::texture[0])
     , m_defaultPaddle(Texture::Paddle::texture[0])
     , m_defaultBall(Texture::Ball::texture[0])
     , m_pauseButton(Texture::MenuItem::texture[0])
@@ -152,8 +152,8 @@ void ObjectManager::Initialize(const Vector2& displayResolution)
     m_defaultBall.m_render.SetScale( {m_defaultBall.m_radius * 2.0f, m_defaultBall.m_radius * 2.0f} );
 
     // Ball starts at 45deg upward right trajectory
-    m_defaultBall.m_velocity.x = displayResolution.x * 0.001f;
-    m_defaultBall.m_velocity.y = m_defaultBall.m_velocity.x;
+    m_defaultBall.m_velocity.x = 0.5f;
+    m_defaultBall.m_velocity.y = displayResolution.y * 0.005f;
     // TODO: change speed after implementing collisions
 }
 

@@ -73,7 +73,7 @@ void Game::UpdateObjects()
     // Update game objects when the active state is Playing
     if (m_state.IsShowingGame())
     {
-        Vector2 newBallPos = m_collider.ProcessBallMovement(m_ball, m_currentLevelBricks, m_frameCounter.GetDelta());
+        Vector2 newBallPos = m_collider.ProcessBallMovement(m_ball, m_paddle, m_currentLevelBricks, m_frameCounter.GetDelta());
         m_ball.m_render.SetPosition(newBallPos);
 
         if (m_currentLevelBricks.empty())
