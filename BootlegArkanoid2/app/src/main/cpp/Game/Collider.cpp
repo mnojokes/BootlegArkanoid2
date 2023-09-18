@@ -1,6 +1,14 @@
 #include "Collider.h"
 #include <limits>
 
+struct Collision
+{
+    Intersection m_intersect;
+    Vector2 m_pointA;
+    Vector2 m_pointB;
+    Vector2 m_normal;
+};
+
 void Collider::Initialize(const Vector2& boundaries)
 {
     m_boundaryTopLeft.x = m_boundaryBottomLeft.x = -boundaries.x;
@@ -20,28 +28,24 @@ bool Collider::IsPointInQuad(const Vector2 &point, const Vector2 &quadCenter, co
 Vector2 Collider::ProcessBallMovement(Ball& ball, const Paddle& paddle, std::vector<Brick>& bricks, float deltaTime) const
 {
     Vector2 oldPos = ball.m_render.GetPosition();
-
     Vector2 newPos = oldPos;
     newPos.x += ball.m_velocity.x * (1.0f - deltaTime);
     newPos.y += ball.m_velocity.y * (1.0f - deltaTime);
-
-    struct Collision
-    {
-        Intersection m_intersect;
-        Vector2 m_pointA;
-        Vector2 m_pointB;
-        Vector2 m_normal;
-    };
-
     Vector2 ballDirection = ball.m_velocity.Normalize();
+
     std::vector<Collision> collisions;
 
-    /*
+    Vector2 pp = paddle.m_render.GetPosition();
+    Vector2 pa = { pp.x - paddle.m_halfExtents.x, pp.y + paddle.m_halfExtents.y };
+    Vector2 pb = { pp.x + paddle.m_halfExtents.x, pp.y + paddle.m_halfExtents.y };
+    Vector2 pc = { pp.x + paddle.m_halfExtents.x, pp.y - paddle.m_halfExtents.y };
+    Vector2 pd = { pp.x - paddle.m_halfExtents.x, pp.y - paddle.m_halfExtents.y };
 
-    Intersection it = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, m_boundaryTopLeft, m_boundaryTopRight);
-    Intersection ir = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, m_boundaryTopRight, m_boundaryBottomRight);
-    Intersection ib = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, m_boundaryBottomRight, m_boundaryBottomLeft);
-    Intersection il = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, m_boundaryTopLeft, m_boundaryBottomLeft);
+    // Paddle surfaces
+    Intersection it = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, pa, pb);
+    Intersection ir = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, pb, pc);
+    Intersection ib = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, pc, pd);
+    Intersection il = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, pd, pa);
 
     if (it.m_time > 0.0f)
     {
@@ -52,36 +56,78 @@ Vector2 Collider::ProcessBallMovement(Ball& ball, const Paddle& paddle, std::vec
         col.m_normal = { 0, 1 };
         collisions.push_back(col);
     }
-    if (i1.m_time > 0.0f)
+    if (ir.m_time > 0.0f)
     {
         Collision col;
-        col.m_intersect = i1;
-        col.m_pointA = m_boundaryTopRight; m_boundaryBottomRight
-        col.m_pointB = c;
+        col.m_intersect = ir;
+        col.m_pointA = m_boundaryTopRight;
+        col.m_pointB = m_boundaryBottomRight;
         col.m_normal = { 1, 0 };
         collisions.push_back(col);
     }
-    if (i2.m_time > 0.0f)
+    if (ib.m_time > 0.0f)
     {
         Collision col;
-        col.m_intersect = i2;
-        col.m_pointA = c;
-        col.m_pointB = d;
+        col.m_intersect = ib;
+        col.m_pointA = m_boundaryBottomRight;
+        col.m_pointB = m_boundaryBottomLeft;
         col.m_normal = { 0, -1 };
         collisions.push_back(col);
 
     }
-    if (i3.m_time > 0.0f)
+    if (il.m_time > 0.0f)
     {
         Collision col;
-        col.m_intersect = i3;
-        col.m_pointA = d;
-        col.m_pointB = a;
+        col.m_intersect = il;
+        col.m_pointA = m_boundaryBottomLeft;
+        col.m_pointB = m_boundaryTopLeft;
         col.m_normal = { -1, 0 };
         collisions.push_back(col);
     }
 
-     */
+    // Boundaries
+    it = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, m_boundaryTopLeft, m_boundaryTopRight);
+    ir = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, m_boundaryTopRight, m_boundaryBottomRight);
+    ib = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, m_boundaryBottomRight, m_boundaryBottomLeft);
+    il = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, m_boundaryTopLeft, m_boundaryBottomLeft);
+
+    if (it.m_time > 0.0f)
+    {
+        Collision col;
+        col.m_intersect = it;
+        col.m_pointA = m_boundaryTopLeft;
+        col.m_pointB = m_boundaryTopRight;
+        col.m_normal = { 0, -1 };
+        collisions.push_back(col);
+    }
+    if (ir.m_time > 0.0f)
+    {
+        Collision col;
+        col.m_intersect = ir;
+        col.m_pointA = m_boundaryTopRight;
+        col.m_pointB = m_boundaryBottomRight;
+        col.m_normal = { -1, 0 };
+        collisions.push_back(col);
+    }
+    if (ib.m_time > 0.0f)
+    {
+        Collision col;
+        col.m_intersect = ib;
+        col.m_pointA = m_boundaryBottomRight;
+        col.m_pointB = m_boundaryBottomLeft;
+        col.m_normal = { 0, 1 };
+        collisions.push_back(col);
+
+    }
+    if (il.m_time > 0.0f)
+    {
+        Collision col;
+        col.m_intersect = il;
+        col.m_pointA = m_boundaryBottomLeft;
+        col.m_pointB = m_boundaryTopLeft;
+        col.m_normal = { 1, 0 };
+        collisions.push_back(col);
+    }
 
     for (auto& brick : bricks)
     {
@@ -91,43 +137,43 @@ Vector2 Collider::ProcessBallMovement(Ball& ball, const Paddle& paddle, std::vec
         Vector2 c = { pos.x + brick.m_halfExtents.x, pos.y - brick.m_halfExtents.y };
         Vector2 d = { pos.x - brick.m_halfExtents.x, pos.y - brick.m_halfExtents.y };
 
-        Intersection i0 = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, a, b);
-        Intersection i1 = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, b, c);
-        Intersection i2 = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, c, d);
-        Intersection i3 = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, d, a);
+        it = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, a, b);
+        ir = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, b, c);
+        ib = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, c, d);
+        il = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, d, a);
 
-        if (i0.m_time > 0.0f)
+        if (it.m_time > 0.0f)
         {
             Collision col;
-            col.m_intersect = i0;
+            col.m_intersect = it;
             col.m_pointA = a;
             col.m_pointB = b;
             col.m_normal = { 0, 1 };
             collisions.push_back(col);
         }
-        if (i1.m_time > 0.0f)
+        if (ir.m_time > 0.0f)
         {
             Collision col;
-            col.m_intersect = i1;
+            col.m_intersect = ir;
             col.m_pointA = b;
             col.m_pointB = c;
             col.m_normal = { 1, 0 };
             collisions.push_back(col);
         }
-        if (i2.m_time > 0.0f)
+        if (ib.m_time > 0.0f)
         {
             Collision col;
-            col.m_intersect = i2;
+            col.m_intersect = ib;
             col.m_pointA = c;
             col.m_pointB = d;
             col.m_normal = { 0, -1 };
             collisions.push_back(col);
 
         }
-        if (i3.m_time > 0.0f)
+        if (il.m_time > 0.0f)
         {
             Collision col;
-            col.m_intersect = i3;
+            col.m_intersect = il;
             col.m_pointA = d;
             col.m_pointB = a;
             col.m_normal = { -1, 0 };
@@ -136,12 +182,10 @@ Vector2 Collider::ProcessBallMovement(Ball& ball, const Paddle& paddle, std::vec
 
     }
 
+    // Sort collisions from deepest to shallowest
     std::sort(collisions.begin(), collisions.end(), [](const Collision& a, const Collision& b) { return a.m_intersect.m_time < b.m_intersect.m_time; });
-    if (!collisions.empty())
-    {
-        printf("something");
-    }
 
+    // Pick all the deepest collisions with the same collision time
     std::vector<Collision> deepestCollisions;
     float min = std::numeric_limits<float>::max();
     for (Collision& col : collisions)
@@ -217,6 +261,8 @@ Vector2 Collider::ProcessBallMovement(Ball& ball, const Paddle& paddle, std::vec
 
     newPos = oldPos;
 
+    // TODO: Fix collision resolution to work without aggressively pulling the object out of the collision
+    // The following is a hack to avoid some of the cases where a ball can get stuck colliding with an object
     newPos.x += ball.m_velocity.x * (1.0f - deltaTime) * tc * 0.5f;
     newPos.y += ball.m_velocity.y * (1.0f - deltaTime) * tc * 0.5f;
 
@@ -234,19 +280,6 @@ Vector2 Collider::ProcessBallMovement(Ball& ball, const Paddle& paddle, std::vec
 
     newPos.y += ball.m_velocity.y * (1.0f - deltaTime);
     newPos.x += ball.m_velocity.x * (1.0f - deltaTime);
-
-    if (!deepestCollisions.empty())
-    {
-        printf("something");
-    }
-
-
-    /*
-    pos.x += m_ball.m_velocity.x * (1.0f - m_frameCounter.GetDelta());
-    pos.y += m_ball.m_velocity.y * (1.0f - m_frameCounter.GetDelta());
-     */
-    // TODO: handle collisions with boundaries and other objects
-
 
     return newPos;
 }
