@@ -58,11 +58,27 @@ namespace Levels
               { 3, 0, 1 }, { 3, 1, 1 }, { 3, 2, 1 }, { 3, 3, 1 }, { 3, 4, 1 }, { 3, 5, 1 }, { 3, 6, 1 }, { 3, 7, 1 }, { 3, 8, 1 }, { 3, 9, 1 },
               { 4, 0, 1 }, { 4, 1, 1 }, { 4, 2, 1 }, { 4, 3, 1 }, { 4, 4, 1 }, { 4, 5, 1 }, { 4, 6, 1 }, { 4, 7, 1 }, { 4, 8, 1 }, { 4, 9, 1 },
               { 5, 0, 1 }, { 5, 1, 1 }, { 5, 2, 1 }, { 5, 3, 1 }, { 5, 4, 1 }, { 5, 5, 1 }, { 5, 6, 1 }, { 5, 7, 1 }, { 5, 8, 1 }, { 5, 9, 1 } };
+
+    const std::vector<BrickData> level2 =
+            {{ 0, 0, 1 }, { 0, 1, 1 }, { 0, 2, 1 }, { 0, 3, 1 }, { 0, 4, 1 }, { 0, 5, 1 }, { 0, 6, 1 }, { 0, 7, 1 }, { 0, 8, 1 }, { 0, 9, 1 },
+             { 1, 0, 1 }, { 1, 1, 1 }, { 1, 2, 1 }, { 1, 3, 1 }, { 1, 4, 1 }, { 1, 5, 1 }, { 1, 6, 1 }, { 1, 7, 1 }, { 1, 8, 1 }, { 1, 9, 1 },
+             { 2, 0, 1 }, { 2, 1, 1 }, { 2, 2, 1 }, { 2, 3, 1 }, { 2, 4, 1 }, { 2, 5, 1 }, { 2, 6, 1 }, { 2, 7, 1 }, { 2, 8, 1 }, { 2, 9, 1 },
+             { 3, 0, 1 }, { 3, 1, 1 }, { 3, 2, 1 }, { 3, 3, 1 }, { 3, 4, 1 }, { 3, 5, 1 }, { 3, 6, 1 }, { 3, 7, 1 }, { 3, 8, 1 }, { 3, 9, 1 },
+             { 4, 0, 1 }, { 4, 1, 1 }, { 4, 2, 1 }, { 4, 3, 1 }, { 4, 4, 1 }, { 4, 5, 1 }, { 4, 6, 1 }, { 4, 7, 1 }, { 4, 8, 1 }, { 4, 9, 1 },
+             { 5, 0, 1 }, { 5, 1, 1 }, { 5, 2, 1 }, { 5, 3, 1 }, { 5, 4, 1 }, { 5, 5, 1 }, { 5, 6, 1 }, { 5, 7, 1 }, { 5, 8, 1 }, { 5, 9, 1 }};
+
+    const std::vector<BrickData> level3 =
+            {{ 0, 0, 1 }, { 0, 1, 1 }, { 0, 2, 1 }, { 0, 3, 1 }, { 0, 4, 1 }, { 0, 5, 1 }, { 0, 6, 1 }, { 0, 7, 1 }, { 0, 8, 1 }, { 0, 9, 1 },
+             { 1, 0, 1 }, { 1, 1, 1 }, { 1, 2, 1 }, { 1, 3, 1 }, { 1, 4, 1 }, { 1, 5, 1 }, { 1, 6, 1 }, { 1, 7, 1 }, { 1, 8, 1 }, { 1, 9, 1 },
+             { 2, 0, 1 }, { 2, 1, 1 }, { 2, 2, 1 }, { 2, 3, 1 }, { 2, 4, 1 }, { 2, 5, 1 }, { 2, 6, 1 }, { 2, 7, 1 }, { 2, 8, 1 }, { 2, 9, 1 },
+             { 3, 0, 1 }, { 3, 1, 1 }, { 3, 2, 1 }, { 3, 3, 1 }, { 3, 4, 1 }, { 3, 5, 1 }, { 3, 6, 1 }, { 3, 7, 1 }, { 3, 8, 1 }, { 3, 9, 1 },
+             { 4, 0, 1 }, { 4, 1, 1 }, { 4, 2, 1 }, { 4, 3, 1 }, { 4, 4, 1 }, { 4, 5, 1 }, { 4, 6, 1 }, { 4, 7, 1 }, { 4, 8, 1 }, { 4, 9, 1 },
+             { 5, 0, 1 }, { 5, 1, 1 }, { 5, 2, 1 }, { 5, 3, 1 }, { 5, 4, 1 }, { 5, 5, 1 }, { 5, 6, 1 }, { 5, 7, 1 }, { 5, 8, 1 }, { 5, 9, 1 }};
 }
 
 namespace Defaults::Bricks
 {
-    std::vector<std::vector<BrickData>> layouts = { Levels::level0, Levels::level1 };
+    std::vector<std::vector<BrickData>> layouts = { Levels::level0, Levels::level1, Levels::level1, Levels::level1 };
 }
 
 ObjectManager::ObjectManager()
@@ -136,6 +152,7 @@ void ObjectManager::Initialize(const Vector2& displayResolution)
     position.y = bottom + bottomMarginToPaddle + m_defaultPaddle.m_halfExtents.y;
     m_defaultPaddle.m_render.SetPosition(position);
     m_defaultPaddle.m_render.SetScale(m_defaultPaddle.m_halfExtents * 2.0f);
+    m_defaultPaddle.m_render.SetColor(ObjColors::paddle.r, ObjColors::paddle.g, ObjColors::paddle.b, ObjColors::paddle.a);
 
     // Paddle touch box is 3x higher than paddle object, extends towards the bottom of the display, similar width
     m_defaultPaddle.m_touchBoxHalfExtents.x = m_defaultPaddle.m_halfExtents.x;
@@ -152,9 +169,8 @@ void ObjectManager::Initialize(const Vector2& displayResolution)
     m_defaultBall.m_render.SetScale( {m_defaultBall.m_radius * 2.0f, m_defaultBall.m_radius * 2.0f} );
 
     // Ball starts at 45deg upward right trajectory
-    m_defaultBall.m_velocity.x = 0.5f;
-    m_defaultBall.m_velocity.y = displayResolution.y * 0.005f;
-    // TODO: change speed after implementing collisions
+    m_defaultBall.m_velocity.x = displayResolution.x * 0.01f;
+    m_defaultBall.m_velocity.y = m_defaultBall.m_velocity.x;
 }
 
 void ObjectManager::LoadMenuObjects(std::vector<const MenuItem*>& menuItems, GameStates state)
@@ -209,7 +225,7 @@ void ObjectManager::LoadLevelBricks(std::vector<Brick>& bricks, uint32_t level)
         position.y -= m_defaultBrick.m_halfExtents.y * 2.0f * static_cast<float>(Defaults::Bricks::layouts[level][i].m_row);
         b.m_render.SetPosition(position);
         b.m_lives = Defaults::Bricks::layouts[level][i].m_lives;
-        // TODO: assign material/texture based on lives
+        b.SetColorOnLives();
         bricks.push_back(b);
     }
 }

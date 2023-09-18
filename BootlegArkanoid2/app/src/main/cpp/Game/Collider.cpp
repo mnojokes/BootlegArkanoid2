@@ -117,7 +117,7 @@ Vector2 Collider::ProcessBallMovement(Ball& ball, const Paddle& paddle, std::vec
         col.m_pointB = m_boundaryBottomLeft;
         col.m_normal = { 0, 1 };
         collisions.push_back(col);
-
+        ball.SignalBottomWallTouch();
     }
     if (il.m_time > 0.0f)
     {
@@ -142,6 +142,7 @@ Vector2 Collider::ProcessBallMovement(Ball& ball, const Paddle& paddle, std::vec
         ib = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, c, d);
         il = CircleLineCollision(ball.m_render.GetPosition(), ballDirection, ball.m_radius, d, a);
 
+        bool collides = false;
         if (it.m_time > 0.0f)
         {
             Collision col;
@@ -150,6 +151,7 @@ Vector2 Collider::ProcessBallMovement(Ball& ball, const Paddle& paddle, std::vec
             col.m_pointB = b;
             col.m_normal = { 0, 1 };
             collisions.push_back(col);
+            collides = true;
         }
         if (ir.m_time > 0.0f)
         {
@@ -159,6 +161,7 @@ Vector2 Collider::ProcessBallMovement(Ball& ball, const Paddle& paddle, std::vec
             col.m_pointB = c;
             col.m_normal = { 1, 0 };
             collisions.push_back(col);
+            collides = true;
         }
         if (ib.m_time > 0.0f)
         {
@@ -168,6 +171,7 @@ Vector2 Collider::ProcessBallMovement(Ball& ball, const Paddle& paddle, std::vec
             col.m_pointB = d;
             col.m_normal = { 0, -1 };
             collisions.push_back(col);
+            collides = true;
 
         }
         if (il.m_time > 0.0f)
@@ -178,6 +182,13 @@ Vector2 Collider::ProcessBallMovement(Ball& ball, const Paddle& paddle, std::vec
             col.m_pointB = a;
             col.m_normal = { -1, 0 };
             collisions.push_back(col);
+            collides = true;
+        }
+
+        if (collides)
+        {
+            brick.SignalCollision();
+            ball.SignalCollision();
         }
 
     }

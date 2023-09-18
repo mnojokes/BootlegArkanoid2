@@ -57,13 +57,25 @@ void Game::UpdateObjects()
         if (m_state.GetCurrentState() == GameStates::Quit)
         {
             // TODO: figure out the way to correctly signal app termination to the top Java layer
-            return;
+            exit(0);
+        }
+        if (m_currentLevel > m_objectManager.GetNumberOfLevels())
+        {
+            m_currentLevel = 1;
+        }
+        if (m_state.GetCurrentState() == GameStates::ShowGameOver)
+        {
+            m_currentLevelBricks.clear();
+            m_paddle = m_objectManager.GetDefaultPaddle();
+            m_ball = m_objectManager.GetDefaultBall();
         }
         if (m_state.IsShowingGame())
         {
             if (m_currentLevelBricks.empty())
             {
                 m_objectManager.LoadLevelBricks(m_currentLevelBricks, m_currentLevel);
+                m_paddle = m_objectManager.GetDefaultPaddle();
+                m_ball = m_objectManager.GetDefaultBall();
             }
         }
         m_objectManager.LoadMenuObjects(m_menuItems, m_state.GetCurrentState());
@@ -75,12 +87,35 @@ void Game::UpdateObjects()
     {
         Vector2 newBallPos = m_collider.ProcessBallMovement(m_ball, m_paddle, m_currentLevelBricks, m_frameCounter.GetDelta());
         m_ball.m_render.SetPosition(newBallPos);
+        if (m_ball.m_lost)
+        {
+            --m_currentLevel;
+            m_state.SetCurrentState(GameStates::ShowGameOver);
+            m_isStateChanged = true;
+        }
+
+        size_t br = 0;
+        while (br < m_currentLevelBricks.size())
+        {
+            if (!m_currentLevelBricks[br].m_isVisible)
+            {
+                m_currentLevelBricks.erase(m_currentLevelBricks.begin() + br);
+                continue;
+            }
+            ++br;
+        }
 
         if (m_currentLevelBricks.empty())
         { // all bricks destroyed
             ++m_currentLevel;
-            // TODO check if all levels completed, change state
-
+            if (m_currentLevel <= m_objectManager.GetNumberOfLevels())
+            {
+                m_state.SetCurrentState(GameStates::ShowPause);
+            }
+            else
+            {
+                m_state.SetCurrentState(GameStates::ShowGameOver);
+            }
             m_isStateChanged = true;
         }
     }
@@ -93,7 +128,6 @@ void Game::RenderFrame()
     {
         for (const Brick& br : m_currentLevelBricks)
         {
-            // TODO: check if visible, render only visible objects
             v.push_back(&br.m_render);
         }
         v.push_back(&m_paddle.m_render);
@@ -102,7 +136,6 @@ void Game::RenderFrame()
 
     for (const MenuItem* mi : m_menuItems)
     {
-        // TODO: check if visible, render only visible objects
         v.push_back(&mi->m_render);
     }
 
@@ -126,9 +159,9 @@ void Game::ProcessInput(const InputEvent& input)
     // TODO: consider changing the input logic to register both down position and up position to make selection of menu items more consistent with general Android UI
     Vector2 touched; // coordinates adjusted to match game world's cartesian space
     touched.x = input.x - m_displayCenterTouch.x;
-    //touched.y = -input.y + m_displayCenterTouch.y;
-    // TODO: fix
-    touched.y = -input.y + 2220.0f * 0.5f; // display hardware has different pixel count than client area (2220 vs 2066)
+    touched.y = -input.y + m_displayCenterTouch.y;
+    // TODO: find a way to get display hardware resolution to correctly calculate coordinates
+    //touched.y = -input.y + 2220.0f * 0.5f; // display hardware has different pixel count than client area (2220 on hardware vs 2066 in client area)
 
     for (const MenuItem* button : m_menuItems)
     {

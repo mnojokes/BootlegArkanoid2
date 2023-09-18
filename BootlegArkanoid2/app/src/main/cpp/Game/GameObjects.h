@@ -5,6 +5,20 @@
 #include "../RenderObject.h"
 #include "GameStates.h"
 
+constexpr int maxNumBallCollisions = 10;
+constexpr float velocityIncrease = 1.1f;
+
+namespace ObjColors
+{
+    const Color brick1 = { 0.52f, 0.87f, 0.01f, 1.0f }; // lawn green
+    const Color brick2 = { 1.0f, 0.75f, 0.0f, 1.0f }; // light amber
+    const Color brick3 = { 0.89f, 0.15f, 0.21f, 1.0f }; // crimson red
+
+    const Color paddle = { 0.0f, 0.28f, 0.73f, 1.0f }; // navy blue
+
+    const Color wall = { 1.0f, 0.49f, 0.0f, 1.0f }; // amber
+}
+
 enum class ObjectType
 {
     Brick,
@@ -51,6 +65,40 @@ public:
     : GameObject(texture, ObjectType::Brick, ColliderShape::AABB)
     {}
 
+    void SetColorOnLives(void)
+    {
+        Color newColor;
+        switch (m_lives)
+        {
+            case 3:
+                newColor = Color(ObjColors::brick3);
+                break;
+            case 2:
+                newColor = Color(ObjColors::brick2);
+                break;
+            case 1:
+                newColor = Color(ObjColors::brick1);
+                break;
+            default:
+                newColor = Color({ 1, 1, 1, 1 });
+                break;
+        }
+        m_render.SetColor(newColor.r, newColor.g, newColor.b, newColor.a);
+    }
+
+    void SignalCollision(void)
+    {
+        --m_lives;
+        if (m_lives <= 0)
+        {
+            m_isVisible = false;
+        }
+        else
+        {
+            SetColorOnLives();
+        }
+    }
+
 public:
     Vector2 m_halfExtents;
     int m_lives = 0;
@@ -74,10 +122,31 @@ class Ball : public GameObject
 public:
     Ball(std::string texture)
     : GameObject(texture, ObjectType::Ball, ColliderShape::Circle)
+    , m_radius(1.0f)
+    , m_numCollisions(0)
+    , m_lost(false)
     {}
+
+    void SignalCollision(void)
+    {
+        ++m_numCollisions;
+        if (m_numCollisions == maxNumBallCollisions)
+        {
+            m_velocity.x *= velocityIncrease;
+            m_velocity.y *= velocityIncrease;
+            m_numCollisions = 0;
+        }
+    }
+
+    void SignalBottomWallTouch(void)
+    {
+        m_lost = true;
+    }
 
 public:
     float m_radius;
+    int m_numCollisions;
+    bool m_lost;
 };
 
 class MenuItem : public GameObject
