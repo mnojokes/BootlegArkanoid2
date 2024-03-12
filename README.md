@@ -1,0 +1,2 @@
+# Bootleg Arkanoid 2
+This is my practice attempt to create a working Android game based on what I learned when working on my [Game Engine](https://github.com/mnojokes/GameEngine). Before this project I had no exposure to mobile development, touch input, and relying on translation layers, so it taught me the fundamentals of Android development, OpenGL rendering, touch input handling, using my C++ code within a Java app. This game was a free-time project and remains barebones and unfinished since I had to switch my efforts to other commitments.
